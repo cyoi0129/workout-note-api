@@ -12,7 +12,7 @@ DELETE FROM messages;
 DELETE FROM notices;
 
 INSERT INTO users (email,password)
-VALUES ('tarte@test.com','9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'),('crepe@test.com','9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'),('madeleine@test.com','9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08');
+VALUES ('user1@test.com','9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'),('user2@test.com','9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'),('user3@test.com','9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08');
 
 INSERT INTO persons (userID,name,gender,brith,stations,areas,gyms,times,bp,sq,dl)
 VALUES (1,'たると','男',1984,ARRAY[1,2,3],ARRAY[1,2,3],ARRAY[1,2,3],ARRAY['平日午前','平日午後','平日夜間'],100,120,120),(2,'クレープ','男',2000,ARRAY[2,3,4],ARRAY[2,3,4],ARRAY[2,3,4],ARRAY['土日午前','土日午後','土日夜間'],80,100,100),(3,'マドレーヌ','女',1985,ARRAY[3,4,5],ARRAY[3,4,5],ARRAY[3,4,5],ARRAY['平日午前','平日午後','平日夜間','土日午前','土日午後','土日夜間'],180,260,280);

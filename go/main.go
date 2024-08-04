@@ -20,6 +20,7 @@ func main() {
 
 		AllowOrigins: []string{ // アクセスを許可したいアクセス元
 			"http://localhost:5173",
+			"https://workout-note.netlify.app/",
 		},
 
 		AllowMethods: []string{ // アクセスを許可したいHTTPメソッド
