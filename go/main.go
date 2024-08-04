@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 	"time"
-
-	controllers "workout-note/controls"
-	"workout-note/models"
+	"workout-note-api/controllers"
+	"workout-note-api/models"
+	"workout-note-api/websocket"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -44,21 +44,31 @@ func main() {
 	}))
 	models.ConnectDatabase() // DB初期化
 	models.CreateCache()     // キャッシュ初期化
+
 	r.StaticFile("/favicon.ico", "./resources/favicon.ico")
 	api := r.Group("/api")
 	api.POST("/login", controllers.LoginHandler)
+	api.GET("/masters", controllers.FetchMasterList)
 	api.Use(controllers.AuthMiddleware)
 	{
 		api.GET("/users", controllers.FetchUsers)
+		api.GET("/person/:id", controllers.FetchPersonByID)
+		api.POST("/person/:id", controllers.UpdatePerson)
+		api.POST("/persons", controllers.FetchTargetPersons)
 		api.POST("/user", controllers.CreateUser)
 		api.PUT("/user/:id", controllers.UpdateUser)
 		api.DELETE("/user/:id", controllers.DeleteUserById)
-		api.GET("/masters/:id", controllers.FetchMasterList)
-		api.POST("/master", controllers.CreateMaster)
-		api.PUT("/master/:id", controllers.UpdateMaster)
-		api.DELETE("/master/:id", controllers.DeleteMasterById)
-		api.GET("/types", controllers.FetchTypeList)
-		api.GET("/muscles", controllers.FetchMuscleList)
+		api.GET("/exists/:id", controllers.FetchExistMatches)
+		api.GET("/match/:id", controllers.FetchRequestingMatches)
+		api.POST("/match", controllers.CreateMatch)
+		api.PUT("/match/:id", controllers.UpdateMatch)
+		api.GET("/notice/:id", controllers.FetchNotices)
+		api.DELETE("/match_notice/:id", controllers.DeleteMatchNotice)
+		api.DELETE("/message_notice/:id", controllers.DeleteMessageNotice)
+		api.GET("/chats/:id", controllers.FetchChats)
+		api.GET("/messages/:id", controllers.FetchMessages)
+		api.POST("/message", controllers.CreateMessage)
+		r.GET("/ws/:topic", websocket.ServeWs)
 	}
-	r.Run() // listen and serve on 0.0.0.0:8080
+	r.Run()
 }

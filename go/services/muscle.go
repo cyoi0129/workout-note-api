@@ -2,7 +2,7 @@ package services
 
 import (
 	"fmt"
-	"workout-note/models"
+	"workout-note-api/models"
 )
 
 func FetchMuscleList() ([]models.Muscle, error) {

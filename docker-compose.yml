@@ -7,7 +7,7 @@ services:
   # postgres サービス
   db:
     # コンテナの名前
-    container_name: workout_db
+    container_name: workout_note_db
     # Dockerfile のディレクトリパス
     build:
       context: .
@@ -20,7 +20,7 @@ services:
 
   # golang アプリケーション
   app:
-    container_name: workoput_app
+    container_name: workout_note_app
     # postgres をビルドした後に app をビルド
     depends_on:
       - db
@@ -42,7 +42,7 @@ services:
   
   # nginx プロキシサーバー    
   nginx:
-    container_name: workout_nginx
+    container_name: workout_note_nginx
     build:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
@@ -53,7 +53,7 @@ services:
 
   # cache サービス
   cache:
-    container_name: workoput_cache
+    container_name: cache
     image: "redis:latest"
     ports:
       - "6379:6379"

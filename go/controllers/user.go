@@ -6,8 +6,8 @@ import (
 
 	"strconv"
 	"time"
-	"workout-note/models"
-	"workout-note/services"
+	"workout-note-api/models"
+	"workout-note-api/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -35,9 +35,42 @@ func CreateUser(c *gin.Context) {
 
 	user, db_error := services.CreateUser(input)
 	if db_error != nil {
+		fmt.Println(db_error)
 		c.JSON(http.StatusOK, gin.H{"status": 1, "data": ""})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"status": 0, "data": user})
+		// トークンの発行（ヘッダー・ペイロード）
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"username": user.Email,
+			"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
+		})
+
+		tokenString, err := token.SignedString([]byte(SECRET_KEY))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"status": 1, "data": "Login Error"})
+			return
+		}
+
+		// ヘッダーにトークンをセット
+		c.Header("Authorization", tokenString)
+		userResponse := models.UserResponse{
+			Token: tokenString,
+			Info: models.Person{
+				Id:       user.Id,
+				UserID:   int(user.Id),
+				Name:     "",
+				Gender:   "",
+				Brith:    1980,
+				Stations: []int{},
+				Areas:    []int{},
+				Gyms:     []int{},
+				Times:    []string{},
+				Bp:       0,
+				Sq:       0,
+				Dl:       0,
+			},
+		}
+
+		c.JSON(http.StatusOK, gin.H{"status": 0, "data": userResponse})
 	}
 }
 
@@ -88,7 +121,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	loginResult, userName := services.CheckUserVaildation(inputUser.Email, inputUser.Password)
+	loginResult, person := services.CheckUserVaildation(inputUser.Email, inputUser.Password)
 	// ユーザー情報の検証
 	if !loginResult {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 1, "data": "Login Error"})
@@ -100,6 +133,7 @@ func LoginHandler(c *gin.Context) {
 		"username": inputUser.Email,
 		"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
+
 	tokenString, err := token.SignedString([]byte(SECRET_KEY))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": 1, "data": "Login Error"})
@@ -108,7 +142,12 @@ func LoginHandler(c *gin.Context) {
 
 	// ヘッダーにトークンをセット
 	c.Header("Authorization", tokenString)
-	c.JSON(http.StatusOK, gin.H{"status": 0, "token": tokenString, "user": userName})
+	userResponse := models.UserResponse{
+		Info:  person,
+		Token: tokenString,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": 0, "data": userResponse})
 }
 
 // APIのトークンからの認証チェック

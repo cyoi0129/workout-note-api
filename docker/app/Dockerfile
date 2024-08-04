@@ -7,6 +7,6 @@ ADD ./go .
 
 # パッケージのインストール
 # RUN go get github.com/lib/pq
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/air-verse/air@latest
 
 CMD ["air", "-c", ".air.toml"]

@@ -2,36 +2,40 @@ package services
 
 import (
 	"fmt"
-	"workout-note/models"
+	"workout-note-api/models"
 
-	"golang.org/x/crypto/bcrypt"
+	"github.com/lib/pq"
 )
 
 // ユーザー一覧の取得
 func FetchUsers() ([]models.User, error) {
 	var users []models.User
-	// rows, err := models.DB.Query("SELECT * FROM users")
-	rows, err := models.DB.Query("SELECT id, name, email FROM \"users\"")
+	rows, err := models.DB.Query("SELECT id, email FROM \"users\"")
 	if err != nil {
 		fmt.Println(err)
 	}
 	for rows.Next() {
 		var user models.User
-		rows.Scan(&user.Id, &user.Name, &user.Email)
+		rows.Scan(&user.Id, &user.Email)
 		users = append(users, user)
 	}
-	fmt.Printf("%v", users)
 	return users, nil
 }
 
 // ユーザー追加
 func CreateUser(input models.User) (models.User, error) {
+	var person models.Person
+	var err error
 	user := models.User{
-		Name:     input.Name,
 		Email:    input.Email,
 		Password: input.Password,
 	}
-	err := models.DB.QueryRow("INSERT INTO users(name, email, password) VALUES($1,$2,$3) RETURNING id", user.Name, user.Email, user.Password).Scan(&user.Id)
+	err = models.DB.QueryRow("INSERT INTO users(email, password) VALUES($1,$2) RETURNING id", user.Email, user.Password).Scan(&user.Id)
+	if err != nil {
+		fmt.Println(err)
+		return user, err
+	}
+	err = models.DB.QueryRow("INSERT INTO persons(userID, name, gender, brith, bp, sq, dl) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id", user.Id, "", "", 1980, 0, 0, 0).Scan(&person.Id)
 
 	if err != nil {
 		fmt.Println(err)
@@ -45,11 +49,10 @@ func CreateUser(input models.User) (models.User, error) {
 func UpdateUser(user_id int, input models.User) (models.User, error) {
 	user := models.User{
 		Id:       input.Id,
-		Name:     input.Name,
 		Email:    input.Email,
 		Password: input.Password,
 	}
-	_, err := models.DB.Query("UPDATE \"users\" SET name = $1, email = $2, password = $3 WHERE id = $4", user.Name, user.Email, user.Password, user_id)
+	_, err := models.DB.Query("UPDATE \"users\" SET email = $1, password = $2 WHERE id = $3", user.Email, user.Password, user_id)
 	if err != nil {
 		return user, err
 	}
@@ -58,7 +61,12 @@ func UpdateUser(user_id int, input models.User) (models.User, error) {
 
 // 既ユーザーの削除
 func DeleteUserById(user_id int) (int, error) {
-	_, err := models.DB.Query("DELETE FROM \"users\" WHERE id = $1", user_id)
+	var err error
+	_, err = models.DB.Query("DELETE FROM \"users\" WHERE id = $1", user_id)
+	if err != nil {
+		return user_id, err
+	}
+	_, err = models.DB.Query("DELETE FROM \"persons\" WHERE userID = $1", user_id)
 	if err != nil {
 		return user_id, err
 	}
@@ -66,32 +74,28 @@ func DeleteUserById(user_id int) (int, error) {
 }
 
 // ユーザーログイン検証
-func CheckUserVaildation(email string, password string) (bool, string) {
+func CheckUserVaildation(email string, password string) (bool, models.Person) {
 	var user models.User
-	row := models.DB.QueryRow("SELECT name, password FROM \"users\" WHERE email = $1", email)
-	err := row.Scan(&user.Name, &user.Password)
+	var person models.Person
+	row := models.DB.QueryRow("SELECT id, email, password FROM \"users\" WHERE email = $1", email)
+	err := row.Scan(&user.Id, &user.Email, &user.Password)
+
+	if err != nil || user.Password != password {
+		fmt.Println(err)
+		return false, person
+	}
+
+	person_row := models.DB.QueryRow("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"persons\" WHERE userID = $1", user.Id)
+	var stationStr, areaStr, gymStr []string
+	err = person_row.Scan(&person.Id, &person.UserID, &person.Name, &person.Gender, &person.Brith, pq.Array(&stationStr), pq.Array(&areaStr), pq.Array(&gymStr), pq.Array(&person.Times), &person.Bp, &person.Sq, &person.Dl)
+	person.Stations = convert2Int(stationStr)
+	person.Areas = convert2Int(areaStr)
+	person.Gyms = convert2Int(gymStr)
+
 	if err != nil {
 		fmt.Println(err)
-		return false, ""
+		return false, person
 	}
-	row.Scan(&user.Name, &user.Password)
-	if user.Password != password {
-		return false, ""
-	}
-	return true, user.Name
-}
 
-// 暗号(Hash)化
-func PasswordEncrypt(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(hash), err
+	return true, person
 }
-
-// 暗号(Hash)と入力された平パスワードの比較
-func CompareHashAndPassword(hash, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-}
-
-// INSERT INTO students (id, name, age) VALUES ('0001', '川端奈緒', 11);
-// UPDATE students SET name = '多田典子' WHERE id = '0001'
-// DELETE FROM students WHERE id = '0001'

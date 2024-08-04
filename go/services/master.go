@@ -2,79 +2,75 @@ package services
 
 import (
 	"fmt"
-	"strconv"
-	"workout-note/models"
-
-	"github.com/lib/pq"
+	"workout-note-api/models"
 )
 
-func convert2Int(strings []string) (ints []int) {
-	var results []int
-	for _, i := range strings {
-		j, err := strconv.Atoi(i)
-		if err != nil {
-			panic(err)
-		}
-		results = append(results, j)
-	}
-	return results
-}
-
-func FetchMasterList(user_id int) ([]models.Master, error) {
-	var masters []models.Master
-	rows, err := models.DB.Query("SELECT id, userID, name, image, type, target, muscles FROM \"masters\" WHERE userID = $1", user_id)
+func FetchStationList() ([]models.Station, error) {
+	var stations []models.Station
+	rows, err := models.DB.Query("SELECT id, lineID, name FROM \"stations\"")
 	if err != nil {
 		fmt.Println(err)
 	}
-	var musclesStr []string
 	for rows.Next() {
-		var master models.Master
-		rows.Scan(&master.Id, &master.UserID, &master.Name, &master.Image, &master.Type, &master.Target, pq.Array(&musclesStr))
-		master.Muscles = convert2Int(musclesStr)
-		masters = append(masters, master)
+		var station models.Station
+		rows.Scan(&station.Id, &station.LineID, &station.Name)
+		stations = append(stations, station)
 	}
-	fmt.Printf("%v", masters)
-	return masters, nil
+	return stations, nil
 }
 
-func CreateMaster(input models.Master) (models.Master, error) {
-	master := models.Master{
-		UserID:  input.UserID,
-		Name:    input.Name,
-		Image:   input.Image,
-		Type:    input.Type,
-		Target:  input.Target,
-		Muscles: input.Muscles,
-	}
-	err := models.DB.QueryRow("INSERT INTO masters(userID, name, image, type, target, muscles) VALUES($1, $2, $3, $4, $5, $6) RETURNING id", master.UserID, master.Name, master.Image, master.Type, master.Target, master.Muscles).Scan(&master.Id)
+func FetchStationListByLine(line_id uint) ([]models.Station, error) {
+	var stations []models.Station
+	rows, err := models.DB.Query("SELECT id, lineID, name FROM \"stations\" WHERE lineID = $1", line_id)
 	if err != nil {
 		fmt.Println(err)
-		return master, err
 	}
-	return master, nil
+	for rows.Next() {
+		var station models.Station
+		rows.Scan(&station.Id, &station.LineID, &station.Name)
+		stations = append(stations, station)
+	}
+	return stations, nil
 }
 
-func UpdateMaster(master_id int, input models.Master) (models.Master, error) {
-	master := models.Master{
-		Id:      input.Id,
-		UserID:  input.UserID,
-		Name:    input.Name,
-		Image:   input.Image,
-		Type:    input.Type,
-		Target:  input.Target,
-		Muscles: input.Muscles,
-	}
-	_, err := models.DB.Query("UPDATE \"masters\" SET userID = $1, name = $2, image = $3 type = $4 target = $5 muscles = $6 WHERE id = $7", master.UserID, master.Name, master.Image, master.Type, master.Target, master.Muscles, master_id)
+func FetchAreaList() ([]models.Area, error) {
+	var areas []models.Area
+	rows, err := models.DB.Query("SELECT id, name FROM \"areas\"")
 	if err != nil {
-		return master, err
+		fmt.Println(err)
 	}
-	return master, nil
+	for rows.Next() {
+		var area models.Area
+		rows.Scan(&area.Id, &area.Name)
+		areas = append(areas, area)
+	}
+	return areas, nil
 }
 
-func DeleteMaster(master_id int) (bool, error) {
-	_, err := models.DB.Query("DELETE FROM \"masters\" WHERE id = $1", master_id)
+func FetchGymList() ([]models.Gym, error) {
+	var gyms []models.Gym
+	rows, err := models.DB.Query("SELECT id, name FROM \"gyms\"")
 	if err != nil {
-		return false, err
+		fmt.Println(err)
 	}
-	return true, nil
+	for rows.Next() {
+		var gym models.Gym
+		rows.Scan(&gym.Id, &gym.Name)
+		gyms = append(gyms, gym)
+	}
+	return gyms, nil
+}
+
+func FetchLineList() ([]models.Line, error) {
+	var lines []models.Line
+	rows, err := models.DB.Query("SELECT id, name FROM \"lines\"")
+	if err != nil {
+		fmt.Println(err)
+	}
+	for rows.Next() {
+		var line models.Line
+		rows.Scan(&line.Id, &line.Name)
+		lines = append(lines, line)
+	}
+	return lines, nil
 }
