@@ -16,6 +16,5 @@ func FetchMuscleList() ([]models.Muscle, error) {
 		rows.Scan(&muscle.Id, &muscle.Part, &muscle.Name)
 		muscles = append(muscles, muscle)
 	}
-	fmt.Printf("%v", muscles)
 	return muscles, nil
 }

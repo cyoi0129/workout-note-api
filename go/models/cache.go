@@ -19,12 +19,12 @@ import (
 var go_cache *cache.Cache
 
 func CreateCache() {
-	c := cache.New(30*time.Minute, 60*time.Minute)
+	c := cache.New(720*time.Hour, 1440*time.Hour)
 	go_cache = c
 }
 
 func SetCache(k string, v interface{}) { // キャッシュを保存
-	go_cache.Set(k, v, 30*time.Second) // 保存期間を指定
+	go_cache.Set(k, v, 720*time.Hour) // 保存期間を指定
 }
 
 func GetCache(k string) (interface{}, error) { // キャッシュを取得

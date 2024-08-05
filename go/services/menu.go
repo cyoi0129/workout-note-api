@@ -20,6 +20,5 @@ func FetchMenuList() ([]models.Menu, error) {
 		menu.Muscles = convert2Int(musclesStr)
 		menus = append(menus, menu)
 	}
-	fmt.Printf("%v", menus)
 	return menus, nil
 }

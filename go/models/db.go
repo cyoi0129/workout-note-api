@@ -16,10 +16,9 @@ func ConnectDatabase() {
 	godotenv.Load(".env")
 	dbName := os.Getenv("DATABASE_NAME")
 	dbUser := os.Getenv("DATABASE_USER")
-	dbHost := os.Getenv("DATABASE_URL")
+	dbHost := os.Getenv("DATABASE_HOST")
 	dbPassword := os.Getenv("DATABASE_PASSWORD")
 	dbPort := 5432
-
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		dbHost, dbPort, dbUser, dbPassword, dbName,
 	)
