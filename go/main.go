@@ -20,7 +20,7 @@ func main() {
 
 		AllowOrigins: []string{ // アクセスを許可したいアクセス元
 			"http://localhost:5173",
-			"https://workout-note.netlify.app/",
+			"https://workout-note.netlify.app",
 		},
 
 		AllowMethods: []string{ // アクセスを許可したいHTTPメソッド
@@ -50,13 +50,13 @@ func main() {
 	api := r.Group("/api")
 	api.POST("/login", controllers.LoginHandler)
 	api.GET("/masters", controllers.FetchMasterList)
+	api.POST("/user", controllers.CreateUser)
 	api.Use(controllers.AuthMiddleware)
 	{
 		api.GET("/users", controllers.FetchUsers)
 		api.GET("/person/:id", controllers.FetchPersonByID)
 		api.POST("/person/:id", controllers.UpdatePerson)
 		api.POST("/persons", controllers.FetchTargetPersons)
-		api.POST("/user", controllers.CreateUser)
 		api.PUT("/user/:id", controllers.UpdateUser)
 		api.DELETE("/user/:id", controllers.DeleteUserById)
 		api.GET("/exists/:id", controllers.FetchExistMatches)
