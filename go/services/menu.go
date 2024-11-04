@@ -9,7 +9,7 @@ import (
 
 func FetchMenuList() ([]models.Menu, error) {
 	var menus []models.Menu
-	rows, err := models.DB.Query("SELECT id, name, image, type, target, muscles FROM \"menus\"")
+	rows, err := models.DB.Query("SELECT id, name, image, type, target, muscles FROM \"workout_menus\"")
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -10,7 +10,7 @@ import (
 // パーソン情報の取得
 func FetchPersonByID(user_id int) (models.Person, error) {
 	var person models.Person
-	row := models.DB.QueryRow("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"persons\" WHERE userID = $1", user_id)
+	row := models.DB.QueryRow("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"workout_persons\" WHERE userID = $1", user_id)
 	var stationStr, areaStr, gymStr []string
 	err := row.Scan(&person.Id, &person.UserID, &person.Name, &person.Gender, &person.Brith, pq.Array(&stationStr), pq.Array(&areaStr), pq.Array(&gymStr), pq.Array(&person.Times), &person.Bp, &person.Sq, &person.Dl)
 	person.Stations = convert2Int(stationStr)
@@ -40,7 +40,7 @@ func UpdatePerson(user_id int, input models.Person) (models.Person, error) {
 		Sq:       input.Sq,
 		Dl:       input.Dl,
 	}
-	_, err := models.DB.Query("UPDATE \"persons\" SET name = $1, gender = $2, brith = $3, stations = ($4), areas = ($5), gyms = ($6), times = ($7), bp = $8, sq = $9, dl = $10 WHERE userId = $11", person.Name, person.Gender, person.Brith, pq.Array(person.Stations), pq.Array(person.Areas), pq.Array(person.Gyms), pq.Array(person.Times), person.Bp, person.Sq, person.Dl, user_id)
+	_, err := models.DB.Query("UPDATE \"workout_persons\" SET name = $1, gender = $2, brith = $3, stations = ($4), areas = ($5), gyms = ($6), times = ($7), bp = $8, sq = $9, dl = $10 WHERE userId = $11", person.Name, person.Gender, person.Brith, pq.Array(person.Stations), pq.Array(person.Areas), pq.Array(person.Gyms), pq.Array(person.Times), person.Bp, person.Sq, person.Dl, user_id)
 	if err != nil {
 		fmt.Println(err)
 		return person, err
@@ -51,7 +51,7 @@ func UpdatePerson(user_id int, input models.Person) (models.Person, error) {
 // 指定条件のパーソン取得
 func FetchTargetPersons(filter models.PersonFilter) ([]models.Person, error) {
 	var persons []models.Person
-	rows, err := models.DB.Query("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"persons\" WHERE (gyms && ($1)) AND (stations && ($2)) AND (areas && ($3))", pq.Array(filter.Gyms), pq.Array(filter.Stations), pq.Array(filter.Areas))
+	rows, err := models.DB.Query("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"workout_persons\" WHERE (gyms && ($1)) AND (stations && ($2)) AND (areas && ($3))", pq.Array(filter.Gyms), pq.Array(filter.Stations), pq.Array(filter.Areas))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -70,7 +70,7 @@ func FetchTargetPersons(filter models.PersonFilter) ([]models.Person, error) {
 // ジム指定のパーソン取得
 func FetchTargetPersonsByGyms(filter models.PersonFilter) ([]models.Person, error) {
 	var persons []models.Person
-	rows, err := models.DB.Query("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"persons\" WHERE gyms && ($1))", pq.Array(filter.Gyms))
+	rows, err := models.DB.Query("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"workout_persons\" WHERE gyms && ($1))", pq.Array(filter.Gyms))
 
 	if err != nil {
 		fmt.Println(err)
@@ -90,7 +90,7 @@ func FetchTargetPersonsByGyms(filter models.PersonFilter) ([]models.Person, erro
 // 駅指定のパーソン取得
 func FetchTargetPersonsByStations(filter models.PersonFilter) ([]models.Person, error) {
 	var persons []models.Person
-	rows, err := models.DB.Query("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"persons\" WHERE (gyms && ($1)) AND (stations && ($2))", pq.Array(filter.Gyms), pq.Array(filter.Stations))
+	rows, err := models.DB.Query("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"workout_persons\" WHERE (gyms && ($1)) AND (stations && ($2))", pq.Array(filter.Gyms), pq.Array(filter.Stations))
 
 	if err != nil {
 		fmt.Println(err)
@@ -110,7 +110,7 @@ func FetchTargetPersonsByStations(filter models.PersonFilter) ([]models.Person, 
 // エリア指定のパーソン取得
 func FetchTargetPersonsByAreas(filter models.PersonFilter) ([]models.Person, error) {
 	var persons []models.Person
-	rows, err := models.DB.Query("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"persons\" WHERE (gyms && ($1)) AND (areas && ($2))", pq.Array(filter.Gyms), pq.Array(filter.Areas))
+	rows, err := models.DB.Query("SELECT id, userID, name, gender, brith, stations, areas, gyms, times, bp, sq, dl FROM \"workout_persons\" WHERE (gyms && ($1)) AND (areas && ($2))", pq.Array(filter.Gyms), pq.Array(filter.Areas))
 	if err != nil {
 		fmt.Println(err)
 	}

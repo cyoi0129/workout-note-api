@@ -8,7 +8,7 @@ import (
 // チャットのメッセージを取得
 func FetchMessages(chat_id int) ([]models.Message, error) {
 	var messages []models.Message
-	rows, err := models.DB.Query("SELECT id, chatID, sender, receiver, content, date FROM \"messages\" WHERE chatID = $1", chat_id)
+	rows, err := models.DB.Query("SELECT id, chatID, sender, receiver, content, date FROM \"workout_messages\" WHERE chatID = $1", chat_id)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -29,7 +29,7 @@ func CreateMessage(input models.Message) (models.Message, error) {
 		Content:  input.Content,
 		Date:     input.Date,
 	}
-	err := models.DB.QueryRow("INSERT INTO messages(chatID, sender, receiver, content, date) VALUES($1, $2, $3, $4, $5) RETURNING id", message.ChatID, message.Sender, message.Receiver, message.Content, message.Date).Scan(&message.Id)
+	err := models.DB.QueryRow("INSERT INTO workout_messages(chatID, sender, receiver, content, date) VALUES($1, $2, $3, $4, $5) RETURNING id", message.ChatID, message.Sender, message.Receiver, message.Content, message.Date).Scan(&message.Id)
 	if err != nil {
 		fmt.Println(err)
 		return message, err

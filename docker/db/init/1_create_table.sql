@@ -1,10 +1,10 @@
-CREATE TABLE users (
+CREATE TABLE workout_users (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   email text NOT NULL,
   password text NOT NULL
 );
 
-CREATE TABLE persons (
+CREATE TABLE workout_persons (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   userID  integer,
   name text,
@@ -19,34 +19,34 @@ CREATE TABLE persons (
   dl integer
 );
 
-CREATE TABLE lines (
+CREATE TABLE workout_lines (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name text NOT NULL
 );
 
-CREATE TABLE stations (
+CREATE TABLE workout_stations (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   lineID integer,
   name text NOT NULL
 );
 
-CREATE TABLE areas (
+CREATE TABLE workout_areas (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name text NOT NULL
 );
 
-CREATE TABLE gyms (
+CREATE TABLE workout_gyms (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name text NOT NULL
 );
 
-CREATE TABLE muscles (
+CREATE TABLE workout_muscles (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   part text NOT NULL,
   name text NOT NULL
 );
 
-CREATE TABLE menus (
+CREATE TABLE workout_menus (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name text NOT NULL,
   image text NOT NULL,
@@ -55,19 +55,19 @@ CREATE TABLE menus (
   muscles integer[]
 );
 
-CREATE TABLE matches (
+CREATE TABLE workout_matches (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   requester integer,
   approver integer,
   status  text
 );
 
-CREATE TABLE chats (
+CREATE TABLE workout_chats (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   member integer[]
 );
 
-CREATE TABLE messages (
+CREATE TABLE workout_messages (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   chatID integer,
   sender integer,
@@ -76,7 +76,7 @@ CREATE TABLE messages (
   date timestamp
 );
 
-CREATE TABLE notices (
+CREATE TABLE workout_notices (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   userID  integer,
   chatID integer,

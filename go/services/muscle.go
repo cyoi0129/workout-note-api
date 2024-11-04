@@ -7,7 +7,7 @@ import (
 
 func FetchMuscleList() ([]models.Muscle, error) {
 	var muscles []models.Muscle
-	rows, err := models.DB.Query("SELECT id, part, name FROM \"muscles\"")
+	rows, err := models.DB.Query("SELECT id, part, name FROM \"workout_muscles\"")
 	if err != nil {
 		fmt.Println(err)
 	}

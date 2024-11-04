@@ -7,7 +7,7 @@ import (
 
 func FetchStationList() ([]models.Station, error) {
 	var stations []models.Station
-	rows, err := models.DB.Query("SELECT id, lineID, name FROM \"stations\"")
+	rows, err := models.DB.Query("SELECT id, lineID, name FROM \"workout_stations\"")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -21,7 +21,7 @@ func FetchStationList() ([]models.Station, error) {
 
 func FetchStationListByLine(line_id uint) ([]models.Station, error) {
 	var stations []models.Station
-	rows, err := models.DB.Query("SELECT id, lineID, name FROM \"stations\" WHERE lineID = $1", line_id)
+	rows, err := models.DB.Query("SELECT id, lineID, name FROM \"workout_stations\" WHERE lineID = $1", line_id)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -35,7 +35,7 @@ func FetchStationListByLine(line_id uint) ([]models.Station, error) {
 
 func FetchAreaList() ([]models.Area, error) {
 	var areas []models.Area
-	rows, err := models.DB.Query("SELECT id, name FROM \"areas\"")
+	rows, err := models.DB.Query("SELECT id, name FROM \"workout_areas\"")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -49,7 +49,7 @@ func FetchAreaList() ([]models.Area, error) {
 
 func FetchGymList() ([]models.Gym, error) {
 	var gyms []models.Gym
-	rows, err := models.DB.Query("SELECT id, name FROM \"gyms\"")
+	rows, err := models.DB.Query("SELECT id, name FROM \"workout_gyms\"")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -63,7 +63,7 @@ func FetchGymList() ([]models.Gym, error) {
 
 func FetchLineList() ([]models.Line, error) {
 	var lines []models.Line
-	rows, err := models.DB.Query("SELECT id, name FROM \"lines\"")
+	rows, err := models.DB.Query("SELECT id, name FROM \"workout_lines\"")
 	if err != nil {
 		fmt.Println(err)
 	}

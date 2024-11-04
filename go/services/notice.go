@@ -8,7 +8,7 @@ import (
 // 未読の通知を取得
 func FetchNotices(user_id int) ([]models.Notice, error) {
 	var notices []models.Notice
-	rows, err := models.DB.Query("SELECT id, userID, chatID, type FROM \"notices\" WHERE userID = $1", user_id)
+	rows, err := models.DB.Query("SELECT id, userID, chatID, type FROM \"workout_notices\" WHERE userID = $1", user_id)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -28,7 +28,7 @@ func CreateNotice(input models.Notice) (models.Notice, error) {
 		Type:   input.Type,
 	}
 
-	err := models.DB.QueryRow("INSERT INTO notices(userID, type, chatID) VALUES($1, $2, $3) RETURNING id", notice.UserID, notice.Type, notice.ChatID).Scan(&notice.Id)
+	err := models.DB.QueryRow("INSERT INTO workout_notices(userID, type, chatID) VALUES($1, $2, $3) RETURNING id", notice.UserID, notice.Type, notice.ChatID).Scan(&notice.Id)
 	if err != nil {
 		fmt.Println(err)
 		return notice, err
@@ -39,7 +39,7 @@ func CreateNotice(input models.Notice) (models.Notice, error) {
 // 通知を削除
 func DeleteMatchNotice(user_id int) (int, error) {
 	var err error
-	_, err = models.DB.Query("DELETE FROM \"notices\" WHERE userID = $1", user_id)
+	_, err = models.DB.Query("DELETE FROM \"workout_notices\" WHERE userID = $1", user_id)
 	if err != nil {
 		return user_id, err
 	}
@@ -48,7 +48,7 @@ func DeleteMatchNotice(user_id int) (int, error) {
 
 func DeleteMessageNotice(target_id int) (int, error) {
 	var err error
-	_, err = models.DB.Query("DELETE FROM \"notices\" WHERE chatID = $1", target_id)
+	_, err = models.DB.Query("DELETE FROM \"workout_notices\" WHERE chatID = $1", target_id)
 	if err != nil {
 		return target_id, err
 	}

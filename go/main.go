@@ -48,6 +48,7 @@ func main() {
 
 	r.StaticFile("/favicon.ico", "./resources/favicon.ico")
 	api := r.Group("/api")
+	api.GET("/health", controllers.HealthCheck)
 	api.POST("/login", controllers.LoginHandler)
 	api.GET("/masters", controllers.FetchMasterList)
 	api.POST("/user", controllers.CreateUser)
